@@ -1,0 +1,25 @@
+name: ci-build
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        fqbn:
+          - arduino:avr:uno
+          - arduino:avr:mega
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Arduino CLI
+        uses: arduino/setup-arduino-cli@v1
+      - name: Install cores
+        run: |
+          arduino-cli core update-index
+          arduino-cli core install arduino:avr
+      - name: Build examples
+        run: |
+          for e in examples/*/*.ino; do
+            echo "Building $e"
+            arduino-cli compile --fqbn ${{ matrix.fqbn }} $e
+          done

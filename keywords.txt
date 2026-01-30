@@ -1,0 +1,10 @@
+MuxBus	KEYWORD1
+getAnalogRaw	KEYWORD2
+getAnalogFiltered	KEYWORD2
+getAnalog8	KEYWORD2
+getDigital	KEYWORD2
+getValue	KEYWORD2
+addAnalogDevice	KEYWORD2
+addDigitalDevice	KEYWORD2
+setup	KEYWORD2
+loop	KEYWORD2
