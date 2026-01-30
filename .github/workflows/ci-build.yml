@@ -10,7 +10,6 @@ jobs:
         fqbn:
           - arduino:avr:uno
           - arduino:avr:mega
-          - esp8266:esp8266:nodemcuv2
     steps:
       - uses: actions/checkout@v4
 
@@ -30,7 +29,6 @@ jobs:
         run: |
           arduino-cli core update-index
           arduino-cli core install arduino:avr
-          arduino-cli core install esp8266:esp8266
 
       - name: Build examples (${{ matrix.fqbn }})
         # IMPORTANT: run from the library root where library.properties + src/ + examples/ live
