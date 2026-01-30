@@ -11,15 +11,20 @@ jobs:
           - arduino:avr:mega
     steps:
       - uses: actions/checkout@v4
+
       - name: Setup Arduino CLI
         uses: arduino/setup-arduino-cli@v1
+
       - name: Install cores
         run: |
           arduino-cli core update-index
           arduino-cli core install arduino:avr
+
       - name: Build examples
+        working-directory: .
         run: |
+          set -e
           for e in examples/*/*.ino; do
-            echo "Building $e"
-            arduino-cli compile --fqbn ${{ matrix.fqbn }} $e
+            echo "Building $e for ${{ matrix.fqbn }}"
+            arduino-cli compile --fqbn ${{ matrix.fqbn }} "$e"
           done
