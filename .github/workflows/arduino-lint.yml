@@ -6,6 +6,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: arduino/arduino-lint-action@v1
-        with:
-          library-manager: update
+        with:          
           compliance: strict
+          project-type: library
+          library-manager: false   # <-- do not check the Libr
+
