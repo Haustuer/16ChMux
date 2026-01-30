@@ -14,19 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Optional: cache Arduino packages for faster builds
-      - name: Cache Arduino packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.arduino15
-            ~/.cache/arduino-ci
-          key: arduino-${{ runner.os }}-${{ hashFiles('**/library.properties') }}
-          restore-keys: |
-            arduino-${{ runner.os }}-
-
       - name: Show repo layout (debug)
-        shell: bash
         run: |
           echo "PWD: $(pwd)"
           ls -la
@@ -39,27 +27,18 @@ jobs:
         uses: arduino/setup-arduino-cli@v1
 
       - name: Install cores
-        shell: bash
         run: |
-          set -euo pipefail
-          # Include ESP8266 additional index to be safe on clean runners
-          arduino-cli core update-index \
-            --additional-urls http://arduino.esp8266.com/stable/package_esp8266com_index.json
+          arduino-cli core update-index
           arduino-cli core install arduino:avr
           arduino-cli core install esp8266:esp8266
 
       - name: Build examples (${{ matrix.fqbn }})
-        shell: bash
+        # IMPORTANT: run from the library root where library.properties + src/ + examples/ live
         working-directory: .
         run: |
-          set -euo pipefail
-          shopt -s nullglob
-          ex_files=(examples/*/*.ino)
-          if (( ${#ex_files[@]} == 0 )); then
-            echo "No example sketches found under examples/*/*.ino"
-            exit 0
-          fi
-          for e in "${ex_files[@]}"; do
+          set -e
+          for e in examples/*/*.ino; do
             echo "Building $e for ${{ matrix.fqbn }}"
-            arduino-cli compile --fqbn "${{ matrix.fqbn }}" --libraries . "$e"
+            # --libraries . adds the current folder to the library search path
+            arduino-cli compile --fqbn ${{ matrix.fqbn }} --libraries . "$e"
           done
