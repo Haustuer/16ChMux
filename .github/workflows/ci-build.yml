@@ -1,5 +1,6 @@
 name: ci-build
 on: [push, pull_request]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,6 +13,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Show repo layout (debug)
+        run: |
+          echo "PWD: $(pwd)"
+          ls -la
+          echo "---- tree (depth 2) ----"
+          find . -maxdepth 2 -type d -print
+          echo "---- library.properties ----"
+          if [ -f library.properties ]; then cat library.properties; else echo "library.properties not at repo root"; fi
+
       - name: Setup Arduino CLI
         uses: arduino/setup-arduino-cli@v1
 
@@ -20,11 +30,13 @@ jobs:
           arduino-cli core update-index
           arduino-cli core install arduino:avr
 
-      - name: Build examples
+      - name: Build examples (${{ matrix.fqbn }})
+        # IMPORTANT: run from the library root where library.properties + src/ + examples/ live
         working-directory: .
         run: |
           set -e
           for e in examples/*/*.ino; do
             echo "Building $e for ${{ matrix.fqbn }}"
-            arduino-cli compile --fqbn ${{ matrix.fqbn }} "$e"
+            # --libraries . adds the current folder to the library search path
+            arduino-cli compile --fqbn ${{ matrix.fqbn }} --libraries . "$e"
           done
