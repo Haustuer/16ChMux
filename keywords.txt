@@ -1,4 +1,4 @@
-MuxBus	KEYWORD1
+Mux16Ch	KEYWORD1
 getAnalogRaw	KEYWORD2
 getAnalogFiltered	KEYWORD2
 getAnalog8	KEYWORD2
